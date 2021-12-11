@@ -1,6 +1,6 @@
 import * as React from "react";
 import Comics from "./Comics";
-import Detail from "./Detail";
+import Detail from "./components/Detail";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {useEffect, useState} from "react";
