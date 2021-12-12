@@ -4,6 +4,7 @@ import Card from "./components/Card";
 import apiParams from "./config";
 import axios from "axios";
 import {useEffect, useState} from "react";
+import {Searchbar} from "react-native-paper";
 
 const styles = StyleSheet.create({
   loading:{
@@ -13,19 +14,23 @@ const styles = StyleSheet.create({
   }
 })
 
-// function SearchBar(){
-//   const [text,setText] = useState('');
-//   return (<View>
-//     <TextInput placeholder="write here, please" defaultValue={text} onChangeText={val=>setText(val)}/>
-//     <StatusBar style="auto" />
-//     <Text>{text}</Text>
-//     </View>)
-// }
-
 function Home(){
   const [isLoading,setIsLoading] = useState(true);
   const [data,setData] = useState([]);
+  const [search, setSearch] = useState('');
   const {ts,apikey,hash,baseURL} = apiParams;
+
+  function searchCharacters(){
+    if(search) {
+      setIsLoading(true);
+      axios.get(`${baseURL}/v1/public/characters`, {
+        params: {ts,apikey,hash,nameStartsWith: search}
+      })
+        .then(r => setData(r.data.data))
+        .catch(e => console.error(e))
+        .finally(() => setIsLoading(false));
+    }
+  }
 
   useEffect(()=>{
     axios.get(`${baseURL}/v1/public/characters`,{params:{ts,apikey,hash}})
@@ -33,9 +38,13 @@ function Home(){
       .catch(e => console.error(e))
       .finally(() => setIsLoading(false));
   },[]);
-  console.log(data);
   return (
-    <View>
+    <View style={{backgroundColor:"lightgray"}}>
+      <Searchbar value={search} placeholder="Search for a character..."
+                 onChangeText={i => setSearch(i)}
+                 onIconPress={searchCharacters}
+                 onSubmitEditing={searchCharacters}
+      />
       {isLoading ?
         <ActivityIndicator style={styles.loading} size="large"/>
         :

@@ -5,7 +5,9 @@ const styles = StyleSheet.create({
   image:{
     height:200,
     width:200,
-    border:"1px solid black",
+    borderStyle:"solid",
+    borderColor:"black",
+    borderWidth:1,
     marginLeft:"22.5%",
     marginVertical:5
   },
@@ -18,7 +20,7 @@ const styles = StyleSheet.create({
 function Detail({image,description}){
   return (
     <View>
-      <Image source={image} style={styles.image}/>
+      <Image source={{uri: image}} style={styles.image}/>
       <Text style={styles.description}> {description?description:'Sorry, no description available.'} </Text>
     </View>
   )
