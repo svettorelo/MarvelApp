@@ -1,5 +1,5 @@
 import * as React from "react";
-import {View,ActivityIndicator,FlatList,StyleSheet} from "react-native";
+import {View,Text,ActivityIndicator,FlatList,StyleSheet} from "react-native";
 import Card from "./components/Card";
 import apiParams from "./config";
 import axios from "axios";
@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
 function Home(){
   const [isLoading,setIsLoading] = useState(true);
   const [data,setData] = useState([]);
+  const [dataSearch,setDataSearch] = useState([]);
   const [search, setSearch] = useState('');
   const {ts,apikey,hash,baseURL} = apiParams;
 
@@ -24,9 +25,8 @@ function Home(){
     if(search) {
       setIsLoading(true);
       axios.get(`${baseURL}/v1/public/characters`, {
-        params: {ts,apikey,hash,nameStartsWith: search}
-      })
-        .then(r => setData(r.data.data))
+        params: {ts,apikey,hash,nameStartsWith:search}})
+        .then(r => setDataSearch(r.data.data))
         .catch(e => console.error(e))
         .finally(() => setIsLoading(false));
     }
@@ -38,20 +38,25 @@ function Home(){
       .catch(e => console.error(e))
       .finally(() => setIsLoading(false));
   },[]);
+
   return (
     <View style={{backgroundColor:"lightgray"}}>
       <Searchbar value={search} placeholder="Search for a character..."
-                 onChangeText={i => setSearch(i)}
+                 onChangeText={i => {
+                   setSearch(i);
+                   setDataSearch([]);
+                 }}
                  onIconPress={searchCharacters}
                  onSubmitEditing={searchCharacters}
       />
       {isLoading ?
         <ActivityIndicator style={styles.loading} size="large"/>
         :
-        <FlatList data={data?.results}
+        <FlatList data={search&&(dataSearch?.results) ? (dataSearch?.results) : (data?.results)}
                   renderItem={({item}) =>
                     <Card image={`${item?.thumbnail?.path}.${item?.thumbnail.extension}`} name={item.name} id={item.id}/>}
                   keyExtractor={({ id }) => id.toString()}/>}
+
     </View>)
 }
 export default Home;
